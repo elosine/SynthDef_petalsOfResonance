@@ -7,6 +7,7 @@ SynthDef("petalsOfResonance", {
 	p1b, p2b, p3b, p4b, p5b, p6b, p7b, p8b, p9b, p10b, p11b, p12b, p13b,
 	resA1, resA2, resA3, resA4, resA5, resA6, resA7, resA8, resA9, resA10, resA11, resA12, resA13,
 	resB1, resB2, resB3, resB4, resB5, resB6, resB7, resB8, resB9, resB10, resB11, resB12, resB13;
+	var outenv;
 
 	pAmp = -40.dbamp;
 
@@ -64,10 +65,10 @@ SynthDef("petalsOfResonance", {
 	p12b= partialTunedB.value(11);
 	p13b= partialTunedB.value(12);
 
-	input = In.ar(ibs);
+	input = SoundIn.ar(ibs);
 	inenv = EnvGen.ar( Env.perc(0.02, inputLen, 1.0, -1), trig);
 	input =  input * inamp * inenv;
-	input = PinkNoise.ar(0.5) * Decay2.ar(Impulse.ar(0.15), 0.15, 0.75);
+	//input = PinkNoise.ar(0.5) * Decay2.ar(Impulse.ar(0.15), 0.15, 0.75);
 
 //Form 13 resonators for each bank/spectrum
 	resA1 = DynKlank.ar(`[[p1a], nil, [rrand(ringL1, ringL2)]], input);
@@ -113,14 +114,17 @@ SynthDef("petalsOfResonance", {
 	outArrayA = Mix.ar(outArrayA);
 
 	ltdOutput = Limiter.ar(outArrayA, 0.98, 0.01);
+	outenv = EnvGen.ar(Env.linen(0.01, ringL2, 0.3), 1, doneAction:2);
 
-	Out.ar(obs, ltdOutput*masteramp);
+	Out.ar(obs, ltdOutput*masteramp*outenv);
 
 	}, [0.069]
 ).add;
 )
-
-a = Synth(\petalsOfResonance);
+fund 35-150
+firstpartial 2-5
+bank offset 2-8
+a = Synth(\petalsOfResonance, [\trig, 1, \fund, rrand(35.0, 150.0), \firstPartial, rrand(2.0, 5.0), \bank2MidiOffset, rrand(2.0, 8.0), \masteramp, 1.5, \spread, 1.33, \ringL1, 7.0, \ringL2, 15]);
 
 a.set(\fund, 35, \firstPartial, 5, \bank2MidiOffset, 8.1, \masteramp, 1.5, \spread, 1.33, \ringL1, 7.0, \ringL2, 15);
 a.free;
