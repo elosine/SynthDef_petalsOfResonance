@@ -48,25 +48,63 @@ if((it>=27.4) && (it<=4186), {~partialsB_pianoRange = ~partialsB_pianoRange.add(
 
 (
 SynthDef("petalsOfResonance", {
-	arg partialBankA, partialBankB;
+	arg numPartialsPerBank=13, fundFreqRangeLow=11.86, fundFreqRangeHigh= 16.52;
+	var fundamentalA = rrand(fundFreqRangeLow, fundFreqRangeHigh);
+	var fundamentalB = rrand(fundFreqRangeLow, fundFreqRangeHigh);
+	var maxFrequency = 4186;
+	var partialsA_bigSet = Array.newClear();
+	var partialsB_bigSet = Array.newClear();
+	var numPartialsPerGroup = 23; //numPartialsPerBank = partialsA_bigSet.size/numPartialsPerBank)
+	var partialsBankA = Array.newClear();
+	var partialsBankB = Array.newClear();
+	var aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk,ll,mm,nn;
 
-	partialTunedA = 	{
-		arg partialNum;
-		var freq, freqMidi, tuner, freqTunedMidi, freqTuned;
-		//firstPartial allows you to start the series at a higher partial than the fund
-		//the fund and spread work together (maybe redundantly)
-		//to determine the space between each partial
-		freq = fund *( firstPartial + (spread*partialNum) );
-		freqMidi = freq.cpsmidi;
-		//constantly shifting tuner for each partial
-		//so the sound is constantly shifting
-		tuner = SinOsc.kr(rrand(0.07, 0.013), 0, 0.5);
-		freqTunedMidi = freqMidi + tuner;
-		freqTuned = freqTunedMidi.midicps;
-	};
+	//// FUNCTIONS ////
+	300.do{|ix| partialsA_bigSet = partialsA_bigSet.add( fundamentalA * (ix+1) ) };
+	300.do{|ix| partialsB_bigSet = partialsB_bigSet.add( fundamentalB * (ix+1) ) };
+
+	aa=partialsA_bigSet.copyRange(0, 22 );
+
+	bb  = floor(Rand(0, 22));
+    // Select the value at the random index using the Select UGen
+    // Select.ar(index, array) selects an element from 'array' at 'index'.
+	cc = Select.ar(bb, aa);
 
 
 
+
+	// cc = partialsA_bigSet[bb];
+	cc.poll(0.00001,"ttt");
+
+	// 22.do{|ix|
+	// 	var tempSetA, chosenPartialA, newArrayA, tempSetB, chosenPartialB;
+	//
+	// 	tempSetA = partialsA_bigSet.copyRange(ix*22, (22-1)*(ix+1) );
+	//
+	// 	chosenPartialA = Select.kr(tempSetA);
+	// 	// partialsBankA = partialsBankA.add(chosenPartialA);
+	// 	// partialsBankA.poll(0.00001,"partialsBankA");
+	//
+	//
+	// 	/*tempSetB = partialsB_bigSet.copyRange(
+	// 	ix*numPartialsPerGroup, (numPartialsPerGroup-1)*(ix+1) );
+	// 	chosenPartialB = tempSetB.choose;
+	// 	partialsBankB = partialsBankB.add(chosenPartialB);*/
+	//
+	// };
+
+
+
+
+
+	//// POLL VALUES ////
+	// fundamentalA.poll(0.00001,"Fundamental A");
+	// fundamentalB.poll(0.00001,"Fundamental B");
+	//partialsA1000.poll(0.00001,"PartialsA1000");
+	//partialsB1000.poll(0.00001,"PartialsB1000");
+	// partialsA_bigSet.poll(0.00001,"Partials A Big Set");
+	// partialsB_bigSet.poll(0.00001,"Partials B Big Set");
+	// partialsBankA.poll(0.00001,"partialsBankA");
 },
 ).add;
 )
